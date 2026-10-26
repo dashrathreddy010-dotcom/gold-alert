@@ -2,14 +2,21 @@ name: XAUUSD HM Alert
 
 on:
   schedule:
-    # 4H candles close at 00,04,08,12,16,20 UTC. Check 4 times in each of those hours.
+    # 4H bot: check 4 times in each hour a 4H candle closes (UTC)
     - cron: "1,16,31,46 0,4,8,12,16,20 * * *"
+    # 1-minute TRIAL bot (best effort, every 5 min). Delete these 2 lines to stop it.
+    - cron: "*/5 * * * *"
   workflow_dispatch:
     inputs:
-      test:
-        description: "Send a test Telegram message only"
-        type: boolean
-        default: false
+      run:
+        description: "What to run"
+        type: choice
+        options:
+          - test-1m
+          - 1m
+          - test-4h
+          - 4h
+        default: test-1m
 
 permissions:
   contents: write
@@ -32,16 +39,21 @@ jobs:
           TWELVEDATA_KEY: ${{ secrets.TWELVEDATA_KEY }}
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          RUN_MODE: ${{ github.event.inputs.run }}
+          SCHEDULE: ${{ github.event.schedule }}
         run: |
-          if [ "${{ github.event.inputs.test }}" = "true" ]; then
-            python hm_alert.py --test
-          else
-            python hm_alert.py
+          if [ "$RUN_MODE" = "test-1m" ]; then python hm_alert_1m.py --test
+          elif [ "$RUN_MODE" = "1m" ]; then python hm_alert_1m.py
+          elif [ "$RUN_MODE" = "test-4h" ]; then python hm_alert.py --test
+          elif [ "$RUN_MODE" = "4h" ]; then python hm_alert.py
+          elif [ "$SCHEDULE" = "*/5 * * * *" ]; then python hm_alert_1m.py
+          else python hm_alert.py
           fi
 
       - name: Save state
         run: |
           git config user.name "alert-bot"
           git config user.email "alert-bot@users.noreply.github.com"
-          git add hm_state.json || true
+          git pull --rebase || true
+          git add hm_state.json hm_state_1m.json || true
           git diff --cached --quiet || (git commit -m "update state" && git push)
