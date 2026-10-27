@@ -1,14 +1,6 @@
 name: XAUUSD HM Alert
 
 on:
-  schedule:
-    # Public repo = unlimited Actions minutes, so all bots (15m + 1H + 4H + 1D) run
-    # after every 15-minute candle close, Mon-Fri all day, plus Sunday market open.
-    # The 1-minute bot is NOT scheduled (manual only).
-    - cron: "2,17,32,47 * * * 1-5"
-    - cron: "2,17,32,47 21-23 * * 0"
-    # Friday daily candle closes Saturday 00:00 UTC
-    - cron: "2,17,32,47 0-1 * * 6"
   workflow_dispatch:
     inputs:
       run:
