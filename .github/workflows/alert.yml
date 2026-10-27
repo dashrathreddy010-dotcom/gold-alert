@@ -2,11 +2,11 @@ name: XAUUSD HM Alert
 
 on:
   schedule:
-    # Market hours (Mon-Fri 06:00-20:59 UTC): after every 15m candle close.
-    # Runs 15m + 1H + 4H bots together.
-    - cron: "2,17,32,47 6-20 * * 1-5"
-    # Off hours (Mon-Fri 21:00-05:59 UTC): twice an hour. Runs 1H + 4H bots.
-    - cron: "2,32 21-23,0-5 * * 1-5"
+    # Public repo = unlimited Actions minutes, so all bots (15m + 1H + 4H) run
+    # after every 15-minute candle close, Mon-Fri all day, plus Sunday market open.
+    # The 1-minute bot is NOT scheduled (manual only).
+    - cron: "2,17,32,47 * * * 1-5"
+    - cron: "2,17,32,47 21-23 * * 0"
   workflow_dispatch:
     inputs:
       run:
@@ -59,9 +59,7 @@ jobs:
             test-1m)  run hm_alert_1m.py --test ;;
             1m)       run hm_alert_1m.py ;;
             *)
-              if [ "$SCHEDULE" = "2,17,32,47 6-20 * * 1-5" ]; then
-                run hm_alert_15m.py
-              fi
+              run hm_alert_15m.py
               run hm_alert_1h.py
               run hm_alert.py
               ;;
