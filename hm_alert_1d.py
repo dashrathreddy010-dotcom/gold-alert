@@ -25,7 +25,6 @@ STATE_FILE = "hm_state_1d.json"
 SEND_EXIT_ALERTS = True
 MAX_AGE_MIN = 180   # ignore signals older than this
 
-RAW_TAIL = []
 TD_KEY = os.getenv("TWELVEDATA_KEY", "")
 TG_TOKEN = os.getenv("TELEGRAM_TOKEN", "")
 TG_CHAT = os.getenv("TELEGRAM_CHAT_ID", "")
@@ -45,9 +44,7 @@ def fetch_candles() -> pd.DataFrame:
     df["datetime"] = pd.to_datetime(df["datetime"], utc=True)
     df["close"] = df["close"].astype(float)
     df = df.sort_values("datetime").reset_index(drop=True)
-    global RAW_TAIL
-    RAW_TAIL = [f"{r.datetime:%Y-%m-%d %a %H:%M} {r.close:.2f}" for r in df.tail(14).itertuples()]
-    df = df[df["datetime"].dt.dayofweek != 6].reset_index(drop=True)  # drop Sunday stub bars
+    df = df[df["datetime"].dt.dayofweek < 5].reset_index(drop=True)  # keep Mon-Fri only (drop flat Sat/Sun filler bars)
     now = datetime.now(timezone.utc)
     df = df[df["datetime"] + BAR <= now].reset_index(drop=True)  # closed candles only
     return df
@@ -161,7 +158,6 @@ def main():
 
     print(f"Alerts sent this run: {sent}")
     state["last_candle"] = last["datetime"].isoformat()
-    state["raw_before_filter"] = RAW_TAIL
     state["recent"] = [f"{r.datetime:%Y-%m-%d %a %H:%M} {r.close:.2f}" for r in df.tail(8).itertuples()]
     save_state(state)
 
