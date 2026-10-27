@@ -2,17 +2,21 @@ name: XAUUSD HM Alert
 
 on:
   schedule:
-    # Public repo = unlimited Actions minutes, so all bots (15m + 1H + 4H) run
+    # Public repo = unlimited Actions minutes, so all bots (15m + 1H + 4H + 1D) run
     # after every 15-minute candle close, Mon-Fri all day, plus Sunday market open.
     # The 1-minute bot is NOT scheduled (manual only).
     - cron: "2,17,32,47 * * * 1-5"
     - cron: "2,17,32,47 21-23 * * 0"
+    # Friday daily candle closes Saturday 00:00 UTC
+    - cron: "2,17,32,47 0-1 * * 6"
   workflow_dispatch:
     inputs:
       run:
         description: "What to run"
         type: choice
         options:
+          - test-1d
+          - 1d
           - test-1h
           - 1h
           - test-15m
@@ -21,7 +25,7 @@ on:
           - 4h
           - test-1m
           - 1m
-        default: test-1h
+        default: test-1d
 
 permissions:
   contents: write
@@ -50,6 +54,8 @@ jobs:
           rc=0
           run() { echo "---- $* ----"; python "$@" || rc=1; }
           case "$RUN_MODE" in
+            test-1d)  run hm_alert_1d.py --test ;;
+            1d)       run hm_alert_1d.py ;;
             test-1h)  run hm_alert_1h.py --test ;;
             1h)       run hm_alert_1h.py ;;
             test-15m) run hm_alert_15m.py --test ;;
@@ -62,6 +68,7 @@ jobs:
               run hm_alert_15m.py
               run hm_alert_1h.py
               run hm_alert.py
+              run hm_alert_1d.py
               ;;
           esac
           exit $rc
@@ -71,5 +78,5 @@ jobs:
           git config user.name "alert-bot"
           git config user.email "alert-bot@users.noreply.github.com"
           git pull --rebase || true
-          git add hm_state.json hm_state_1m.json hm_state_15m.json hm_state_1h.json || true
+          git add hm_state.json hm_state_1m.json hm_state_15m.json hm_state_1h.json hm_state_1d.json || true
           git diff --cached --quiet || (git commit -m "update state" && git push)
