@@ -1,0 +1,44 @@
+name: XAUUSD HM Runner
+
+on:
+  schedule:
+    # A new job is queued every 3 hours (Mon-Fri) and on Sunday evening.
+    # concurrency below makes it wait until the current one ends, so there is
+    # (almost) always exactly one runner alive, checking right after every candle close.
+    - cron: "13 */3 * * 1-5"
+    - cron: "13 21 * * 0"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hm-runner
+  cancel-in-progress: false
+
+jobs:
+  runner:
+    runs-on: ubuntu-latest
+    timeout-minutes: 355
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install libraries
+        run: pip install requests pandas numpy
+
+      - name: Git identity
+        run: |
+          git config user.name "alert-bot"
+          git config user.email "alert-bot@users.noreply.github.com"
+
+      - name: Run always-on runner
+        env:
+          TWELVEDATA_KEY: ${{ secrets.TWELVEDATA_KEY }}
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          RUN_MINUTES: "340"
+        run: python -u hm_runner.py
