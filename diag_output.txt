@@ -1,0 +1,39 @@
+===== 1H =====  candles=499  position_open_now=True
+last 8 BUY/EXIT events (candle CLOSE time):
+  EXIT closed 2026-10-19 08:00 UTC = 19 Oct 13:30 IST  close=4174.67
+  BUY  closed 2026-10-21 08:00 UTC = 21 Oct 13:30 IST  close=4123.74
+  EXIT closed 2026-10-21 19:00 UTC = 22 Oct 00:30 IST  close=4115.97
+  BUY  closed 2026-10-21 21:00 UTC = 22 Oct 02:30 IST  close=4141.17
+  EXIT closed 2026-10-22 00:00 UTC = 22 Oct 05:30 IST  close=4125.61
+  BUY  closed 2026-10-26 03:00 UTC = 26 Oct 08:30 IST  close=3998.33
+  EXIT closed 2026-10-26 14:00 UTC = 26 Oct 19:30 IST  close=3989.18
+  BUY  closed 2026-10-27 11:00 UTC = 27 Oct 16:30 IST  close=4010.35
+last 8 candles: close | ema3(rsi) | wma21(rsi) | ema9 | ema15 | buy exit
+  closed 10-27 07:00UTC | 4000.88 | 43.65 | 49.81 | 4009.90 | 4010.77 | False False
+  closed 10-27 08:00UTC | 3997.60 | 39.40 | 48.23 | 4007.44 | 4009.12 | False False
+  closed 10-27 09:00UTC | 3993.51 | 35.62 | 46.48 | 4004.66 | 4007.17 | False False
+  closed 10-27 10:00UTC | 4001.25 | 39.42 | 45.92 | 4003.98 | 4006.43 | False False
+  closed 10-27 11:00UTC | 4010.35 | 46.44 | 46.40 | 4005.25 | 4006.92 | True False
+  closed 10-27 12:00UTC | 4012.60 | 51.07 | 46.98 | 4006.72 | 4007.63 | False False
+  closed 10-27 13:00UTC | 4023.59 | 58.00 | 48.43 | 4010.09 | 4009.62 | False False
+  closed 10-27 14:00UTC | 4028.25 | 63.05 | 50.12 | 4013.73 | 4011.95 | False False
+
+===== 15M =====  candles=499  position_open_now=False
+last 8 BUY/EXIT events (candle CLOSE time):
+  BUY  closed 2026-10-26 14:45 UTC = 26 Oct 20:15 IST  close=4022.67
+  EXIT closed 2026-10-26 18:15 UTC = 26 Oct 23:45 IST  close=4020.29
+  BUY  closed 2026-10-26 21:00 UTC = 27 Oct 02:30 IST  close=4017.27
+  EXIT closed 2026-10-26 22:45 UTC = 27 Oct 04:15 IST  close=4014.43
+  BUY  closed 2026-10-27 00:15 UTC = 27 Oct 05:45 IST  close=4019.82
+  EXIT closed 2026-10-27 03:00 UTC = 27 Oct 08:30 IST  close=4009.84
+  BUY  closed 2026-10-27 03:45 UTC = 27 Oct 09:15 IST  close=4019.98
+  EXIT closed 2026-10-27 05:00 UTC = 27 Oct 10:30 IST  close=4011.19
+last 8 candles: close | ema3(rsi) | wma21(rsi) | ema9 | ema15 | buy exit
+  closed 10-27 13:00UTC | 4023.59 | 74.47 | 59.77 | 4015.56 | 4011.81 | False False
+  closed 10-27 13:15UTC | 4023.52 | 75.20 | 62.02 | 4017.15 | 4013.27 | False False
+  closed 10-27 13:30UTC | 4022.65 | 74.08 | 63.80 | 4018.25 | 4014.45 | False False
+  closed 10-27 13:45UTC | 4030.87 | 77.49 | 66.14 | 4020.78 | 4016.50 | False False
+  closed 10-27 14:00UTC | 4028.25 | 75.34 | 67.54 | 4022.27 | 4017.97 | False False
+  closed 10-27 14:15UTC | 4040.81 | 78.81 | 69.57 | 4025.98 | 4020.82 | False False
+  closed 10-27 14:30UTC | 4041.58 | 80.75 | 71.42 | 4029.10 | 4023.42 | False False
+  closed 10-27 14:45UTC | 4047.19 | 83.08 | 73.33 | 4032.72 | 4026.39 | False False
