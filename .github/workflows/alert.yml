@@ -2,23 +2,26 @@ name: XAUUSD HM Alert
 
 on:
   schedule:
-    # 4H bot: check 4 times in each hour a 4H candle closes (UTC)
-    - cron: "1,16,31,46 0,4,8,12,16,20 * * *"
-    # 15-minute bot: after every 15m candle close, Mon-Fri, 06:00-20:59 UTC
+    # Market hours (Mon-Fri 06:00-20:59 UTC): after every 15m candle close.
+    # Runs 15m + 1H + 4H bots together.
     - cron: "2,17,32,47 6-20 * * 1-5"
+    # Off hours (Mon-Fri 21:00-05:59 UTC): twice an hour. Runs 1H + 4H bots.
+    - cron: "2,32 21-23,0-5 * * 1-5"
   workflow_dispatch:
     inputs:
       run:
         description: "What to run"
         type: choice
         options:
+          - test-1h
+          - 1h
           - test-15m
           - 15m
-          - test-1m
-          - 1m
           - test-4h
           - 4h
-        default: test-15m
+          - test-1m
+          - 1m
+        default: test-1h
 
 permissions:
   contents: write
@@ -36,7 +39,7 @@ jobs:
       - name: Install libraries
         run: pip install requests pandas numpy
 
-      - name: Run bot
+      - name: Run bots
         env:
           TWELVEDATA_KEY: ${{ secrets.TWELVEDATA_KEY }}
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
@@ -44,20 +47,31 @@ jobs:
           RUN_MODE: ${{ github.event.inputs.run }}
           SCHEDULE: ${{ github.event.schedule }}
         run: |
-          if [ "$RUN_MODE" = "test-15m" ]; then python hm_alert_15m.py --test
-          elif [ "$RUN_MODE" = "15m" ]; then python hm_alert_15m.py
-          elif [ "$RUN_MODE" = "test-1m" ]; then python hm_alert_1m.py --test
-          elif [ "$RUN_MODE" = "1m" ]; then python hm_alert_1m.py
-          elif [ "$RUN_MODE" = "test-4h" ]; then python hm_alert.py --test
-          elif [ "$RUN_MODE" = "4h" ]; then python hm_alert.py
-          elif [ "$SCHEDULE" = "2,17,32,47 6-20 * * 1-5" ]; then python hm_alert_15m.py
-          else python hm_alert.py
-          fi
+          rc=0
+          run() { echo "---- $* ----"; python "$@" || rc=1; }
+          case "$RUN_MODE" in
+            test-1h)  run hm_alert_1h.py --test ;;
+            1h)       run hm_alert_1h.py ;;
+            test-15m) run hm_alert_15m.py --test ;;
+            15m)      run hm_alert_15m.py ;;
+            test-4h)  run hm_alert.py --test ;;
+            4h)       run hm_alert.py ;;
+            test-1m)  run hm_alert_1m.py --test ;;
+            1m)       run hm_alert_1m.py ;;
+            *)
+              if [ "$SCHEDULE" = "2,17,32,47 6-20 * * 1-5" ]; then
+                run hm_alert_15m.py
+              fi
+              run hm_alert_1h.py
+              run hm_alert.py
+              ;;
+          esac
+          exit $rc
 
       - name: Save state
         run: |
           git config user.name "alert-bot"
           git config user.email "alert-bot@users.noreply.github.com"
           git pull --rebase || true
-          git add hm_state.json hm_state_1m.json hm_state_15m.json || true
+          git add hm_state.json hm_state_1m.json hm_state_15m.json hm_state_1h.json || true
           git diff --cached --quiet || (git commit -m "update state" && git push)
