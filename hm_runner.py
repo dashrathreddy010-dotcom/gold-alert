@@ -1,5 +1,5 @@
 """
-Always-on runner for the Hilega-Milega bots (15m, 1H, 4H, 1D).
+Always-on runner for the Hilega-Milega bots (15m, 4H, 1D; 1H is OFF).
 
 Instead of waking up on GitHub's (slow, unreliable) cron, this job stays alive
 for ~5h40m and wakes up by itself a few seconds after EVERY candle close.
@@ -143,8 +143,8 @@ def main():
         return orig_get(url, *a, **k)
 
     requests.get = throttled_get
-    bots = [Bot("hm_alert_15m", 15), Bot("hm_alert_1h", 60),
-            Bot("hm_alert", 240), Bot("hm_alert_1d", 1440)]
+    # 1H bot is switched OFF on request (hm_alert_1h.py is still in the repo; re-add it here to turn it on)
+    bots = [Bot("hm_alert_15m", 15), Bot("hm_alert", 240), Bot("hm_alert_1d", 1440)]
     run(bots)
 
 
